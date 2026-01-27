@@ -16,6 +16,7 @@ dependencies = [
     "opt-einsum",
     "h5py",
     "zencfg>=0.3.0",
+    "torch>=2.8.0",
 ]
 requires-python = ">=3.9"
 readme = "README.rst"
