@@ -138,7 +138,7 @@ def main():
         device=device,
         mixed_precision=config.opt.mixed_precision,
         eval_interval=config.opt.eval_interval,
-        log_output=config.wandb.log_output,
+        log_output=True, # Force True to save plots locally
         use_distributed=config.distributed.use_distributed,
         verbose=config.verbose,
         wandb_log=False, # Disable wandb for testing script
