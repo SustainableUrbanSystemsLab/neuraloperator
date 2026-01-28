@@ -32,6 +32,51 @@ def main():
     from zencfg import make_config_from_cli
     from config.navier_stokes_config import Default
 
+    # Manual config file handling
+    import argparse
+    import tomllib
+    
+    # Parse --config only
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", type=str)
+    args, unknown = parser.parse_known_args()
+
+    if args.config:
+        # Load TOML
+        with open(args.config, "rb") as f:
+            config_dict = tomllib.load(f)
+
+        # Flatten dict to CLI args
+        def flatten_to_args(d, prefix=""):
+            args_list = []
+            for k, v in d.items():
+                key = f"{prefix}.{k}" if prefix else k
+                if isinstance(v, dict):
+                    args_list.extend(flatten_to_args(v, key))
+                else:
+                    # Convert to string representation. 
+                    # zencfg likely handles standard python repr for lists/bools etc.
+                    if isinstance(v, bool):
+                        val = str(v).lower() # explicit bool conversion if needed? Or True/False keys?
+                        # zencfg might expect True/False. Let's stick to str(v) for now but check bools.
+                        # python bool str is "True", "False". 
+                        val = str(v)
+                    elif isinstance(v, str):
+                        val = v # Strings passed as is? or quoted?
+                        # In CLI: --foo=bar. 
+                    else:
+                        val = str(v)
+                    
+                    # Add to args
+                    args_list.append(f"--{key}={val}")
+            return args_list
+
+        file_args = flatten_to_args(config_dict)
+        print(f"Loaded config from file. Injecting args: {file_args}")
+        
+        # Update sys.argv: generic CLI args override file args
+        sys.argv = [sys.argv[0]] + file_args + unknown
+
     config = make_config_from_cli(Default)
     config = config.to_dict()
 
