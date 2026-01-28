@@ -809,7 +809,25 @@ class Trainer:
         See neuralop.training.training_state
         """
         # Save plots if logs are enabled
-        pass 
+        pass
+        
+        if comm.get_local_rank() == 0:
+            print(f"DEBUG: Saving checkpoint to {save_dir}...") 
+            if self.save_best is not None:
+                save_name = "best_model"
+            else:
+                save_name = "model"
+            save_training_state(
+                save_dir=save_dir,
+                save_name=save_name,
+                model=self.model,
+                optimizer=self.optimizer,
+                scheduler=self.scheduler,
+                regularizer=self.regularizer,
+                epoch=self.epoch,
+            )
+            if self.verbose:
+                print(f"[Rank 0]: saved training state to {save_dir}")
 
     def _save_plot(self, outs, sample, log_prefix, epoch):
         """

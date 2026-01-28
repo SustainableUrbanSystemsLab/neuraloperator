@@ -260,6 +260,7 @@ def main():
     os.makedirs(save_dir, exist_ok=True)
 
     # Start training process
+    print(f"DEBUG: Starting training. Checkpoints will be saved to {os.path.abspath(save_dir)}")
     trainer.train(
         train_loader,
         test_loaders,
@@ -269,6 +270,7 @@ def main():
         training_loss=train_loss,
         eval_losses=eval_losses,
         save_best=f"{config.data.test_resolutions[0]}_h1", # Monitor H1 loss on first test resolution
+        save_every=50,
         save_dir=save_dir,
     )
 
