@@ -67,8 +67,9 @@ def main():
                     else:
                         val = str(v)
                     
-                    # Add to args
-                    args_list.append(f"--{key}={val}")
+                    # Add to args as pair
+                    args_list.append(f"--{key}")
+                    args_list.append(f"{val}")
             return args_list
 
         file_args = flatten_to_args(config_dict)
