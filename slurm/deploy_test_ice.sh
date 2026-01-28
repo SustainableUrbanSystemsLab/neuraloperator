@@ -59,7 +59,12 @@ echo "=========================================="
 
 mkdir -p logs
 
-SBATCH_CMD="sbatch --gres=gpu:$SLURM_GPU --account=$ICE_ACCOUNT --export=NUM_GPUS=$NUM_GPUS,CONFIG_FILE=$CONFIG_FILE,CHECKPOINT_DIR=$CHECKPOINT_DIR"
+# Export variables so sbatch can see them
+export NUM_GPUS
+export CONFIG_FILE
+export CHECKPOINT_DIR
+
+SBATCH_CMD="sbatch --gres=gpu:$SLURM_GPU --account=$ICE_ACCOUNT --export=ALL,NUM_GPUS=$NUM_GPUS,CONFIG_FILE=$CONFIG_FILE,CHECKPOINT_DIR=$CHECKPOINT_DIR"
 
 if [ -n "$ICE_PARTITION" ]; then
     SBATCH_CMD="$SBATCH_CMD --partition=$ICE_PARTITION"
