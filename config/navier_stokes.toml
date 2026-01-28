@@ -1,6 +1,6 @@
 [ice]
 account = "coa"
-partition = "gpu-h200"
+# partition = "gpu-h200" # Commented out to let Slurm auto-select based on GRES
 
 [data]
 folder = "~/data/navier_stokes"
