@@ -85,7 +85,7 @@ class NavierStokesDataset(PTDataset):
         if isinstance(root_dir, str):
             root_dir = Path(root_dir)
         if not root_dir.exists():
-            root_dir.mkdir(parents=True)
+            root_dir.mkdir(parents=True, exist_ok=True)
 
         # Zenodo record ID for Navier-Stokes dataset
         zenodo_record_id = "12825163"
