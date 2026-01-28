@@ -255,6 +255,11 @@ def main():
             wandb.watch(model)
 
     # Start training process
+    # Create checkpoint directory
+    save_dir = "./ckpt"
+    os.makedirs(save_dir, exist_ok=True)
+
+    # Start training process
     trainer.train(
         train_loader,
         test_loaders,
@@ -263,6 +268,8 @@ def main():
         regularizer=False,
         training_loss=train_loss,
         eval_losses=eval_losses,
+        save_best=f"{config.data.test_resolutions[0]}_h1", # Monitor H1 loss on first test resolution
+        save_dir=save_dir,
     )
 
     # Finalize WandB logging
