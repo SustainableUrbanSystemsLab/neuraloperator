@@ -1,0 +1,29 @@
+[ice]
+account = "coa"
+partition = "gpu-h200"
+
+[data]
+folder = "~/data/navier_stokes"
+batch_size = 4
+n_train = 1000
+train_resolution = 128
+n_tests = [200]
+test_resolutions = [128]
+test_batch_sizes = [4]
+encode_input = true
+encode_output = true
+
+[opt]
+n_epochs = 100
+learning_rate = 0.0003
+training_loss = "h1"
+weight_decay = 0.0001
+scheduler = "StepLR"
+step_size = 20
+gamma = 0.5
+
+[model]
+n_modes = [16, 16]
+hidden_channels = 64
+projection_channels = 128
+n_layers = 4

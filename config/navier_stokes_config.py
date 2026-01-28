@@ -17,6 +17,11 @@ class NavierStokesOptConfig(OptimizationConfig):
     gamma: float = 0.5
 
 
+class IceConfig(ConfigBase):
+    account: str = "coa"
+    partition: str = ""
+
+
 class NavierStokesDatasetConfig(ConfigBase):
     folder: str = "~/data/navier_stokes/"
     batch_size: int = 8
@@ -38,3 +43,4 @@ class Default(ConfigBase):
     data: NavierStokesDatasetConfig = NavierStokesDatasetConfig()
     patching: PatchingConfig = PatchingConfig()
     wandb: WandbConfig = WandbConfig()
+    ice: IceConfig = IceConfig()
