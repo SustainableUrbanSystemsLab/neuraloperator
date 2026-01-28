@@ -14,12 +14,12 @@ encode_input = true
 encode_output = true
 
 [opt]
-n_epochs = 100
+n_epochs = 500
 learning_rate = 0.0003
 training_loss = "h1"
 weight_decay = 0.0001
 scheduler = "StepLR"
-step_size = 20
+step_size = 100
 gamma = 0.5
 
 [model]

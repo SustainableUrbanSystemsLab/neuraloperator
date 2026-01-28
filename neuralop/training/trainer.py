@@ -8,7 +8,10 @@ import torch
 from torch.cuda import amp
 from torch import nn
 import torch.distributed as dist
+import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
+import os
+import matplotlib.pyplot as plt
 
 # Only import wandb and use if installed
 wandb_available = False
@@ -462,8 +465,14 @@ class Trainer:
             errors[key] /= self.n_samples
 
         # on last batch, log model outputs
-        if self.log_output and self.wandb_log:
-            errors[f"{log_prefix}_outputs"] = wandb.Image(outs)
+        # on last batch, log model outputs
+        if self.log_output:
+            if self.wandb_log:
+                errors[f"{log_prefix}_outputs"] = wandb.Image(outs)
+            
+            # Save to local disk
+            if epoch is not None: 
+                self._save_plot(outs, sample, log_prefix, epoch)
 
         return errors
 
@@ -798,12 +807,57 @@ class Trainer:
         to a directory for resuming later. Only saves
         training state on the first GPU.
         See neuralop.training.training_state
-
-        Parameters
-        ----------
-        save_dir : str | Path
-            directory in which to save training state
         """
+        # Save plots if logs are enabled
+        pass 
+
+    def _save_plot(self, outs, sample, log_prefix, epoch):
+        """
+        Saves a comparison plot of Input, Target, and Prediction.
+        Assumes data is in [Batch, Channels, Height, Width] format.
+        """
+        save_dir = "./training_plots"
+        os.makedirs(save_dir, exist_ok=True)
+        
+        # Move to CPU and numpy
+        if isinstance(outs, torch.Tensor):
+            pred = outs[0, 0].detach().cpu().numpy()
+        else:
+            return # Skip if output format is unknown
+
+        if "y" in sample:
+            target = sample["y"][0, 0].detach().cpu().numpy()
+        else:
+            return
+
+        if "x" in sample:
+            # Handle different input shapes. Usually [B, C, H, W]
+            input_data = sample["x"][0, 0].detach().cpu().numpy()
+        else:
+            input_data = None
+
+        fig, ax = plt.subplots(1, 3 if input_data is not None else 2, figsize=(15, 5))
+        
+        if input_data is not None:
+            ax[0].imshow(input_data)
+            ax[0].set_title("Input")
+            
+            ax[1].imshow(target)
+            ax[1].set_title("Target")
+            
+            ax[2].imshow(pred)
+            ax[2].set_title(f"Prediction (Epoch {epoch})")
+        else:
+             ax[0].imshow(target)
+             ax[0].set_title("Target")
+             
+             ax[1].imshow(pred)
+             ax[1].set_title(f"Prediction (Epoch {epoch})")
+
+        filename = f"{save_dir}/{log_prefix}_epoch_{epoch}.png"
+        plt.savefig(filename)
+        plt.close(fig)
+
         if comm.get_local_rank() == 0:
             if self.save_best is not None:
                 save_name = "best_model"

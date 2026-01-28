@@ -21,6 +21,17 @@ echo "Checkpoint: ${CHECKPOINT_DIR}"
 # Go to the directory where sbatch was submitted from
 cd $SLURM_SUBMIT_DIR
 
+# Ensure we are at the project root (where pyproject.toml exists)
+if [ ! -f "pyproject.toml" ]; then
+    echo "pyproject.toml not found in current directory ($PWD). Checking parent..."
+    if [ -f "../pyproject.toml" ]; then
+        cd ..
+        echo "Changed directory to project root: $PWD"
+    else
+        echo "Error: Could not find pyproject.toml. Dependency sync might fail."
+    fi
+fi
+
 # Ensure logs directory exists
 mkdir -p logs
 
